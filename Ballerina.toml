@@ -1,0 +1,10 @@
+[project]
+org-name= "kasun"
+version= "0.1.0"
+
+[build-options]
+observability-included=true
+
+[dependencies]
+"ballerinax/sfdc" = "2.1.2"
+
