@@ -8,3 +8,9 @@ observability-included=true
 [dependencies]
 "ballerinax/sfdc" = "2.1.2"
 
+[platform]
+target = "java8"
+	[[platform.libraries]]
+	path = "./javalibs/mysql-connector-java-8.0.21.jar"
+	modules = ["sfdcoppmigration"]
+

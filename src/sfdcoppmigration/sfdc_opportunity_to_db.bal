@@ -2,6 +2,10 @@ import ballerina/io;
 import ballerina/config;
 import ballerina/log;
 import ballerinax/sfdc;
+import ballerina/mysql;
+import ballerina/sql;
+
+
 
 sfdc:SalesforceConfiguration sfConfig = {
     baseUrl: config:getAsString("SF_EP_URL"),
@@ -24,6 +28,9 @@ sfdc:ListenerConfiguration listenerConfig = {
 sfdc:BaseClient baseClient = new(sfConfig);
 
 listener sfdc:Listener sfdcEventListener = new (listenerConfig);
+mysql:Client mysqlClient =  check new (user = config:getAsString("DB_USER"),
+                                        password = config:getAsString("DB_PWD"));
+
 
 @sfdc:ServiceConfig {
     topic:"/topic/OpportunityUpdate"
@@ -34,6 +41,7 @@ service sfdcOpportunityListener on sfdcEventListener {
         io:StringReader sr = new(op.toJsonString());
         json|error opportunity = sr.readJson();
         if (opportunity is json) {
+            log:printInfo(opportunity.toJsonString());
             log:printInfo("Opportunity Stage : " + opportunity.sobject.StageName.toString());
             //check if opportunity is closed won
             if (opportunity.sobject.StageName == "Closed Won") {
@@ -44,19 +52,33 @@ service sfdcOpportunityListener on sfdcEventListener {
                 sfdc:SObjectClient sobjectClient = baseClient->getSobjectClient();
                 //get account
                 json|sfdc:Error account = sobjectClient->getAccountById(accountId);
-
-                // sfdc:QueryClient qClient = baseClient->getQueryClient(); 
-                // qClient->getQueryResult()
                 
                 if (account is json) {
                     //extract required fields from the account record
                     string accountName = account.Name.toString();
                     log:printInfo("Account Name : " + accountName);
-                    //Target connector to follow
-                    // Database Operations goes here. 
+                    sql:Error? result  = addOpportunityToDB(opportunity);
+                    if (result is error) {
+                        io:println(result);
+                    }
                     
                 }
             }
         }
     }
+}
+
+
+function addOpportunityToDB(json opportunity) returns sql:Error? {
+    string stageName = opportunity.sobject.StageName.toString(); 
+    string accountId = opportunity.sobject.AccountId.toString();
+    string id = opportunity.sobject.Id.toString();
+    string name = opportunity.sobject.Name.toString();
+
+    log:printInfo(id + ":" + accountId + ":" + name + ":" + stageName);
+
+    sql:ParameterizedQuery insertQuery =
+            `INSERT INTO ESC_SFDC_TO_DB.Opportunity (Id, AccountId, Name, Description) 
+            VALUES (${id}, ${accountId}, ${name}, ${stageName})`;
+    sql:ExecutionResult result  =  check mysqlClient->execute(insertQuery);
 }
