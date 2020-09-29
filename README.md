@@ -1,4 +1,4 @@
-# Integration Template: Salesforce to Database - Add Opportunity updates to a DB.
+# Salesforce to Database - Add Opportunity updates to a DB.
 
 
 ## Integration Use Case 
@@ -14,7 +14,7 @@ This integration template listen to the updated on Salesfroce Opportunities and 
 - [Salesforce Connector](https://github.com/ballerina-platform/module-ballerinax-sfdc) will be downloaded from 
 `Ballerina Central` when running the Ballerina file.
 
-### Before you begin
+## Set up Source and Target systems
 
 Let's first see how to add the Salesforce configurations for the application.
 

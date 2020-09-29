@@ -5,8 +5,6 @@ import ballerinax/sfdc;
 import ballerina/mysql;
 import ballerina/sql;
 
-
-
 sfdc:SalesforceConfiguration sfConfig = {
     baseUrl: config:getAsString("SF_EP_URL"),
     clientConfig: {
@@ -32,8 +30,9 @@ mysql:Client mysqlClient =  check new (user = config:getAsString("DB_USER"),
                                         password = config:getAsString("DB_PWD"));
 
 
+
 @sfdc:ServiceConfig {
-    topic:"/topic/OpportunityUpdate"
+    topic:config:getAsString("SF_OPPORTUNITY_TOPIC")
 }
 service sfdcOpportunityListener on sfdcEventListener {
     resource function onEvent(json op) {  
@@ -42,28 +41,25 @@ service sfdcOpportunityListener on sfdcEventListener {
         json|error opportunity = sr.readJson();
         if (opportunity is json) {
             log:printInfo(opportunity.toJsonString());
-            log:printInfo("Opportunity Stage : " + opportunity.sobject.StageName.toString());
-            //check if opportunity is closed won
-            if (opportunity.sobject.StageName == "Closed Won") {
-                //get the account id from the opportunity
-                string accountId = opportunity.sobject.AccountId.toString();
-                log:printInfo("Account ID : " + accountId);
-                //create sobject client
-                sfdc:SObjectClient sobjectClient = baseClient->getSobjectClient();
-                //get account
-                json|sfdc:Error account = sobjectClient->getAccountById(accountId);
-                
-                if (account is json) {
-                    //extract required fields from the account record
-                    string accountName = account.Name.toString();
-                    log:printInfo("Account Name : " + accountName);
-                    sql:Error? result  = addOpportunityToDB(opportunity);
-                    if (result is error) {
-                        io:println(result);
-                    }
-                    
+            //Get the account id from the opportunity
+            string accountId = opportunity.sobject.AccountId.toString();
+            log:printInfo("Account ID : " + accountId);
+            //Create sobject client
+            sfdc:SObjectClient sobjectClient = baseClient->getSobjectClient();
+            //Get the corresponding account. 
+            json|sfdc:Error account = sobjectClient->getAccountById(accountId);
+            if (account is json) {
+                //extract required fields from the account record
+                string accountName = account.Name.toString();
+                // Log account information associated with the current opportunity. 
+                log:printInfo(account);
+                // Add the current opportunity to a DB. 
+                sql:Error? result  = addOpportunityToDB(opportunity);
+                if (result is error) {
+                    log:printError(result.message());
                 }
             }
+
         }
     }
 }
@@ -74,11 +70,12 @@ function addOpportunityToDB(json opportunity) returns sql:Error? {
     string accountId = opportunity.sobject.AccountId.toString();
     string id = opportunity.sobject.Id.toString();
     string name = opportunity.sobject.Name.toString();
-
+    
     log:printInfo(id + ":" + accountId + ":" + name + ":" + stageName);
-
+    // The SQL query to insert an Opportunity record to the DB. 
     sql:ParameterizedQuery insertQuery =
             `INSERT INTO ESC_SFDC_TO_DB.Opportunity (Id, AccountId, Name, Description) 
             VALUES (${id}, ${accountId}, ${name}, ${stageName})`;
+    // Invoking the MySQL Client to execute the insert operation. 
     sql:ExecutionResult result  =  check mysqlClient->execute(insertQuery);
 }
