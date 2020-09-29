@@ -3,7 +3,7 @@
 
 ## Integration Use Case 
 
-This integration template listen to the updated on Salesfroce Opportunities and publish the updated opportunities to a database.       
+This integration template listens to the updated on Salesforce Opportunities and publishes the updated opportunities to a database.     
 
 ![image](docs/images/sfdc-db-opps-upd.png)
 

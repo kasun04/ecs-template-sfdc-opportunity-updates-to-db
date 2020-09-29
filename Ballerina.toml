@@ -12,5 +12,5 @@ observability-included=true
 target = "java8"
 	[[platform.libraries]]
 	path = "./javalibs/mysql-connector-java-8.0.21.jar"
-	modules = ["sfdcoppmigration"]
+	modules = ["sfdcoppupdates"]
 
