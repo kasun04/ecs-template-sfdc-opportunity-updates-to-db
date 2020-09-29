@@ -3,7 +3,7 @@
 
 ## Integration Use Case 
 
-This integration template listen to the updated on Salesfroce Opportunities and publish the updated opportunities to a database. 
+This integration template listen to the updated on Salesfroce Opportunities and publish the updated opportunities to a database.       
 
 ![image](docs/images/sfdc-db-opps-upd.png)
 
@@ -14,7 +14,7 @@ This integration template listen to the updated on Salesfroce Opportunities and 
 - A Text Editor or an IDE ([VSCode](https://marketplace.visualstudio.com/items?itemName=ballerina.ballerina), 
 [IntelliJ IDEA](https://plugins.jetbrains.com/plugin/9520-ballerina)).  
 - [Salesforce Connector](https://github.com/ballerina-platform/module-ballerinax-sfdc) will be downloaded from 
-`Ballerina Central` when running the Ballerina file.
+[Ballerina Central](https://central.ballerina.io/) when running the Ballerina file.
 
 ## Set up Source and Target systems
 
