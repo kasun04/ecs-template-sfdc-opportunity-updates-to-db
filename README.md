@@ -5,6 +5,8 @@
 
 This integration template listen to the updated on Salesfroce Opportunities and publish the updated opportunities to a database. 
 
+![image](docs/images/sfdc-db-opps-upd.png)
+
 
 ## Prerequisites
 
@@ -82,11 +84,13 @@ SF_PASSWORD=""
 
 DB_USER=""
 DB_PWD=""
+
 ```
 
 #### Setup Database
-TODO
-
+1. The opportunity updates are added to a database and this template uses MySQL as the RDBMS. 
+2. You can create the required database and the tables using [opportunities.sql](./opportunities.sql) script. 
+3. Based on the use case that you implement, you can change the database schema and the content that you wish to add to the database. 
 
 
 ## Running the Template
