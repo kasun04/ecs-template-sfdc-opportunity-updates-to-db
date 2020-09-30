@@ -16,7 +16,7 @@ This integration template listens to the updated on Salesforce Opportunities and
 - [Salesforce Connector](https://github.com/ballerina-platform/module-ballerinax-sfdc) will be downloaded from 
 [Ballerina Central](https://central.ballerina.io/) when running the Ballerina file.
 
-## Set up Source and Target systems
+## Confuguring source and target APIs/systems
 
 Let's first see how to add the Salesforce configurations for the application.
 
@@ -68,6 +68,8 @@ insert pushTopic;
 ```
 4. Once the creation is done, specify the topic name in each event listener service config.
 
+## Confuring the Integration Template
+
 Once you obtained all configurations, Replace "" in the `ballerina.conf` file with your data.
 
 ##### ballerina.conf
@@ -81,6 +83,7 @@ SF_REFRESH_URL=""
 
 SF_USERNAME=""
 SF_PASSWORD=""
+SF_OPPORTUNITY_TOPIC=""
 
 DB_USER=""
 DB_PWD=""
@@ -99,7 +102,7 @@ DB_PWD=""
 `$ ballerina build -a`. 
 
 2. Then you can run the integration binary with the following command. 
-`$ java -jar target/bin/sfdcoppmigration.jar`. 
+`$ java -jar target/bin/sfdcoppupdates.jar`. 
 
 Successful listener startup will print following in the console.
 ```
